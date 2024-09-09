@@ -9,7 +9,8 @@ import Header from "../components/Header";
 import Logo from "../components/Logo";
 import TextInput from "../components/TextInput";
 import { theme } from "../core/theme";
-import { passwordValidator } from "../helpers/passwordValidator"; // Garde la validation du mot de passe
+import { passwordValidator } from "../helpers/passwordValidator";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function LoginScreen({ navigation }) {
   const [username, setUsername] = useState({ value: "", error: "" });
@@ -19,7 +20,7 @@ export default function LoginScreen({ navigation }) {
 
   const onLoginPressed = async () => {
     const passwordError = passwordValidator(password.value);
-    if (!username.value) {
+    if (!username.value.trim()) {
       setUsername({ ...username, error: "Username can't be empty" });
       return;
     }
@@ -32,16 +33,22 @@ export default function LoginScreen({ navigation }) {
     setErrorMessage("");
 
     try {
-      const response = await axios.post("http://192.168.0.13:8000/authmobile/login/", {
-        username: username.value,
+      const response = await axios.post("http://192.168.89.123:8000/authmobile/login/", {
+        username: username.value.trim(),
         password: password.value,
       });
 
       console.log("Login successful:", response.data);
-      navigation.reset({
-        index: 0,
-        routes: [{ name: "Dashboard" }],
-      });
+
+      // Store the token in AsyncStorage
+      const token = response.data.access || null;
+      if (token) {
+        await AsyncStorage.setItem('access_token', token);
+      }
+
+      // Navigate to the Dashboard with the pseudo
+      const pseudo = response.data.pseudo || username.value;
+      navigation.navigate('Dashboard', { pseudo });
     } catch (error) {
       console.error(
         "Login error:",
@@ -84,9 +91,7 @@ export default function LoginScreen({ navigation }) {
       />
       {errorMessage ? <Text style={styles.error}>{errorMessage}</Text> : null}
       <View style={styles.forgotPassword}>
-        <TouchableOpacity
-          onPress={() => navigation.navigate("ResetPasswordScreen")}
-        >
+        <TouchableOpacity onPress={() => navigation.navigate("ResetPasswordScreen")}>
           <Text style={styles.forgot}>Forgot your password?</Text>
         </TouchableOpacity>
       </View>

@@ -33,7 +33,7 @@ export default function LoginScreen({ navigation }) {
     setErrorMessage("");
 
     try {
-      const response = await axios.post("http://192.168.89.123:8000/authmobile/login/", {
+      const response = await axios.post("http://192.168.43.236:8000/authmobile/login/", {
         username: username.value.trim(),
         password: password.value,
       });

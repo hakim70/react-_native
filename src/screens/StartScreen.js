@@ -11,7 +11,7 @@ export default function StartScreen({ navigation }) {
       <Logo />
       <Header>Smart For Green </Header>
         <Paragraph>
-         
+
         </Paragraph>
       <Button
         mode="contained"

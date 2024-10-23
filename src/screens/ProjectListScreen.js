@@ -16,7 +16,7 @@ const ProjectsScreen = ({ navigation }) => {
           throw new Error('No authentication token found');
         }
 
-        const response = await axios.get('http://192.168.165.123:8000/client_projects/', {
+        const response = await axios.get('http://192.168.1.17:8000/client_projects/', {
           headers: {
             Authorization: `Bearer ${token}`,
           },
